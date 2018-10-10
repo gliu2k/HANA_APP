@@ -1,0 +1,13 @@
+/*@@layout{"layoutInfo":{"x":-383,"y":-55}}*/
+context STORE {
+
+
+    /*@@layout{"layoutInfo":{"x":-515,"y":-91.5}}*/
+    entity STORE {
+        key STORE_ID : String(10);
+            NAME     : String(10) not null;
+            ADDR     : String(20) not null;
+            DATE_FROM     : LocalDate  not null;
+            DATE_TO       : LocalDate  not null;
+    };
+};

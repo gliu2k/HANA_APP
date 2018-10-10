@@ -1,0 +1,27 @@
+context v_schedule {
+    /*@@layout{"layoutInfo":{"x":-505,"y":-26.5}}*/
+    entity ENT {
+        key NAME     : String(10);
+            CATEGORY : String(10);
+            PRICE    : Integer;
+            EXP      : Integer;
+    };
+
+    /*@@layout{"layoutInfo":{"x":-1119,"y":-40.5,"external":[{"id":"ENT","sourceName":"association"}]}}*/
+    entity VENDOR {
+        key COMPANY     : String(10);
+        key ENT_NAME    : String(10);
+        key EVENT       : String(10);
+            DATE        : LocalDate;
+            RATE        : Integer;
+            association : association[1, 1..1] to ENT on ENT_NAME = association.NAME;
+    };
+
+    /*@@layout{"layoutInfo":{"x":-733,"y":-104.5,"inner":{"unconnected":[{"type":"SimpleDS","id":"undefined::View_1.VENDOR","x":-234,"y":-92}],"connected":{"type":"SimpleDS","id":"undefined::View_1.ENT","x":2,"y":-83}}}}*/
+    view View_1 as
+        select from VENDOR
+        {
+            COMPANY,
+            ENT_NAME
+        };
+};

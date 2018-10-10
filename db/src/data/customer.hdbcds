@@ -1,0 +1,9 @@
+context customer {
+//@ Cusotmer
+	entity CUSTOMER{
+		key ID:			String(10);
+		CUSTOMER_NAME:	String(10);
+		CUSTOMER_AGE:	Integer;
+		CUSTOMER_ADDR:	String(20);
+	}
+};

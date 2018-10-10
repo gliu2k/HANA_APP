@@ -1,0 +1,16 @@
+/*@@layout{"layoutInfo":{"x":-298,"y":-103}}*/
+context sales {
+    type customer : String(10);
+    type amount : Decimal(5, 1);
+
+    @Comment : 'sales'
+    entity sales {
+            //		 @Comment : 'SalesNo'
+        key TRANSACTION : String(10);
+            @Comment : 'Customer'
+            CUSTOMER    : customer;
+
+            @Comment : 'Amount'
+            AMOUNT      : amount;
+    }
+};
