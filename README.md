@@ -1,17 +1,18 @@
 # Description
 
-This is an article that I wrote in **year 2015** regarding how to utilize the new features of SAP HANA.
+This is an article that I wrote in **year 2016** regarding how to utilize the new features of SAP HANA. The 2nd article I submitted to SAPexperts in 2016. 
 
-# Background:
+![alt text](/images/F0.png?raw=true)
+
+# Background
 E-commerce is becoming a trend and getting more and more popular in retail business. However, certain products, like shoes or clothes, still need the involvement of customer’s personal experience. Such generates a brand-new business concept called O2O, in terms of online-to-offline, which is a strategy to draw customers from the online channels to the physical stores. And, to access the online information, there are various approaches. Nowadays, the most popular and efficient way is through smart phone. In this article, I will demonstrate an application that achieves these two business models. 
 
-# Business Case:
+# Business Case
 The O2O concept and mobile Apps can be adopted in many requirements of today’s business. For instance, in all walks of business, running campaign is the common way to promote products. Today, one of the most efficient, or cheapest, methods to launch a campaign is through social media, email or SMS. Let’s suppose a fashion footwear company wants to put a new product into market. It publishes an advertisement on the social media, sending the message to the targeted customers. People who see the information in their phone may want to go to the store and pick a fitted pair immediately. Usually, they prefer to go to those stores that have the sufficient goods on the shelf and are closest to where they are. 
 To meet the needs, it requires the application should have two features, real-time data handling and mobility support. And, the solution of using SAP HANA and SAPUI5 is the perfect match. In the combination of in-memory technology and column-oriented storage, applications powered by SAP HANA platform can provide an instant response to any request. And, if developed in SAPUI5, new Apps can run on all the UI5-compatible browsers across different devices with the similar user experiences.
 Thus, in the following chapters, I will show you how to take advantage of the features of these two SAP products and give a step-by-step instruction about the implementation of the application. 
 
-
-# Key Technologies:
+# Key Technologies
 This article is for the readers who are expected to have the basic knowledge of SAP BW and HANA products. To better understand the technologies to be covered, I will give a brief introduction, explaining their roles and how they are to be applied.
 
 <ins>**SAP PI**</ins>
@@ -282,3 +283,6 @@ If using the default distance of 10km to check the stores, we can find that stor
 
 # 4. Summary
 In this article, I have demonstrated how to build an SAPUI5 App to retrieve the Real-Time data from SAP HANA. It presents a way about how to leverage the features like modelling, spatial functions and XS in SAP HANA platform, as well as how to combine them with the traditional functionalities in SAP BW product.
+
+
+
