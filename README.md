@@ -5,23 +5,23 @@ This is an article that I wrote in **year 2016** about how to utilize the new fe
 ![alt text](/images/F0.png?raw=true)
 
 # Background
-E-commerce is becoming a trend and getting more and more popular in retail business. However, certain products, like shoes or clothes, still need the involvement of customer’s personal experience. Such generates a brand-new business concept called O2O, in terms of online-to-offline, which is a strategy to draw customers from the online channels to the physical stores. And, to access the online information, there are various approaches. Nowadays, the most popular and efficient way is through smart phone. In this article, I will demonstrate an application that achieves these two business models. 
+E-commerce is becoming a trend and getting more and more popular in retail business. However, certain products, like shoes or clothes, still need the involvement of customer’s personal experience. Such generates a brand-new business concept called O2O, in terms of online-to-offline, which is a strategy to draw customers from the online channels to the physical stores. And, to access online information, there are various approaches. Nowadays, the most popular and efficient way is through smart phones. In this article, I will demonstrate an application that achieves these two business models. 
 
 # Business Case
-The O2O concept and mobile Apps can be adopted in many requirements of today’s business. For instance, in all walks of business, running campaign is the common way to promote products. Today, one of the most efficient, or cheapest, methods to launch a campaign is through social media, email or SMS. Let’s suppose a fashion footwear company wants to put a new product into market. It publishes an advertisement on the social media, sending the message to the targeted customers. People who see the information in their phone may want to go to the store and pick a fitted pair immediately. Usually, they prefer to go to those stores that have the sufficient goods on the shelf and are closest to where they are. 
-To meet the needs, it requires the application should have two features, real-time data handling and mobility support. And, the solution of using SAP HANA and SAPUI5 is the perfect match. In the combination of in-memory technology and column-oriented storage, applications powered by SAP HANA platform can provide an instant response to any request. And, if developed in SAPUI5, new Apps can run on all the UI5-compatible browsers across different devices with the similar user experiences.
+The O2O concept and mobile Apps can be adopted in many requirements of today’s business. For instance, in all walks of business, running campaign is the common way to promote products. Today, one of the most efficient, or cheapest, methods to launch a campaign is through social media, email or SMS. Let’s suppose a fashion footwear company wants to put a new product onto the market. It publishes an advertisement on social media, sending the message to the targeted customers. People who see the information on their phone may want to go to the store and pick a fitted pair immediately. Usually, they prefer to go to those stores that have sufficient goods on the shelf and are closest to where they are. 
+To meet the needs, the application should have two features, real-time data handling and mobility support. And the solution of using SAP HANA and SAPUI5 is the perfect match. In the combination of in-memory technology and column-oriented storage, applications powered by SAP HANA platform can provide an instant response to any request. And, if developed in SAPUI5, new Apps can run on all the UI5-compatible browsers across different devices with similar user experiences.
 Thus, in the following chapters, I will show you how to take advantage of the features of these two SAP products and give a step-by-step instruction about the implementation of the application. 
 
 # Key Technologies
-This article is for the readers who are expected to have the basic knowledge of SAP BW and HANA products. To better understand the technologies to be covered, I will give a brief introduction, explaining their roles and how they are to be applied.
+This article is for the readers who are expected to have basic knowledge of SAP BW and HANA products. To better understand the technologies to be covered, I will give a brief introduction, explaining their roles and how they are to be applied.
 
 <ins>**SAP PI**</ins>
 
-SAP PI is an SAP product which is widely used as the data exchange hub between SAP and non-SAP systems. In retail business, SAP PI usually plays a critical role of connecting SAP system to the external system, like POS device. In this case, as soon as the business transaction data get into the POS system, they will be posted to PI and then immediately transmitted to SAP BW system through Web Service. The whole process happens in Real-Time.
+SAP PI is an SAP product which is widely used as the data exchange hub between SAP and non-SAP systems. In retail business, SAP PI usually plays a critical role in connecting SAP system to the external system, like POS device. In this case, as soon as the business transaction data gets into the POS system, they will be posted to PI and then immediately transmitted to SAP BW system through Web Service. The whole process happens in Real-Time.
 
 <ins>**BW-on-HANA**</ins>
 
-SAP BW is still the primary business warehouse system used in most SAP landscapes. Today more and more customers start to migrate the BW system to HANA Database. Within BW powered by HANA, we are able to not only continue using the BW objects, like InfoObject and DSO and but start exploring the HANA’s new characteristics, like in-memory data processing and agile data modelling. Just as other databases, HANA supports functions, stored procedures and SQL(Script) operations. In additions, it boarded a lot of excited new technologies as detailed below.
+SAP BW is still the primary business warehouse system used in most SAP landscapes. Today more and more customers start to migrate the BW system to HANA Database. Within BW powered by HANA, we can not only continue using the BW objects, like InfoObject and DSO and but start exploring the HANA’s new characteristics, like in-memory data processing and agile data modelling. Just as other databases, HANA supports functions, stored procedures and SQL(Script) operations. In addition, it includes a lot of excited new technologies as detailed below.
 
 <ins>**HANA Spatial Functions**</ins>
 
@@ -53,7 +53,7 @@ SAPUI5 is a UI development toolkit, which combines a Javascript library and a bo
 
 **Figure 1 – Real Time Data Acquisition**
 
-First we need to build up a DataSource to receive the data posted from PI system through Web Service. In our scenario, the external system is the POS device installed in every store. Therefore, after each transaction, the sales data will get into the BW PSA table in Real-Time. 
+First, we need to build up a DataSource to receive the data posted from PI system through Web Service. In our scenario, the external system is the POS device installed in every store. Therefore, after each transaction, the sales data will get into the BW PSA table in Real-Time. 
 
 ![alt text](/images/F2.1.png?raw=true)
 
@@ -65,7 +65,7 @@ There are some extra developments on PI and ABAP sides, requesting to set up the
 
 ## 1.2. Create the data flow to get the stock snapshot data from ECC system
 
-After every day’s business, the stock information of each shop are collected, replenished and updated in the statistics table - “S032” in ECC system. And then, during the night time, the daily snapshot data are extracted to BW system and will be used for the inventory reporting purpose.
+After every day’s business, the stock information of each shop is collected, replenished and updated in the statistics table - “S032” in ECC system. And then, during the nighttime, the daily snapshot data are extracted to BW system and will be used for the inventory reporting purpose.
 
 ![alt text](/images/F3.png?raw=true)
 
@@ -79,8 +79,8 @@ In BW store master data table, I add two attribute fields to keep the latitude a
 **Figure 4 – Store(Plant) GPS data**
 
 ## 1.4. Build a HANA Data Model   
-SAP HANA supports three types of views - Attribute, Analytical and Calculation Views. I am going to build a Calculation View on the top of the existed BW tables.
-What we want is the Real-Time stock data of each store. It is easy to get the number from the inventory data subtracted the Real-Time sales part. In HANA view, I create a calculation field named “QYT” **(= "Inventory - Quantity" - "RT Sales - Quantity")**
+SAP HANA supports three types of views - Attribute, Analytical and Calculation Views. I am going to build a Calculation View on the top of the existing BW tables.
+What we want is the Real-Time stock data of each store. It is easy to get the number from the inventory data subtracted from the Real-Time sales part. In HANA view, I create a calculation field named “QYT” **(= "Inventory - Quantity" - "RT Sales - Quantity")**
 
 ![alt text](/images/F5.png?raw=true)
 
@@ -91,7 +91,7 @@ What we want is the Real-Time stock data of each store. It is easy to get the nu
 **Figure 6 – Real-Time Stock of Material “000000000211110095” with the store GPS Information**
 
 ## 1.5. Create HANA procedure for spatial data calculation
-We need to know the stores which have the stock and located within the distance from certain position. In the first step of the procedure we access the calculation view created in **step 4** to get the all the stores that have the material in stock. Second, we call the HANA spatial functions “ST_POINT”, “POINT” and “ST_DISTANCE” to filter out those within the distance.
+We need to know the stores which have stock and located within the distance from certain position. In the first step of the procedures we access the calculation view created in **step 4** to get the all the stores that have the material in stock. Second, we call the HANA spatial functions “ST_POINT”, “POINT” and “ST_DISTANCE” to filter out those within the distance.
 
 The below statement is to calculate the distance between the input position (v_lng and v_lat) and the GPS locations of all selected stores.
 
@@ -121,8 +121,7 @@ LT_STOCK = SELECT  PLANT, NAME, QTY, LNG, LAT
 > SRID 4326 is referring to WGS84, the standard provides a spheroidal reference surface for the Earth. It is the spatial reference system used by the Global Positioning System (GPS).
 
 ## 1.6. Create a SQLScript Calculation View 
-HANA partial functions support specific data type, for instance decimal used as the GPS position. However, it is impossible to specify the data type for the parameters passed from web browser. Therefore, we need to create a SQLScript Calculation View to perform data-parsing and conversion.
-I create a dedicated package for the XS application called “XSPJ1”.  Under it, I put this view and OData service definition file.
+HANA partial functions support specific data type, for instance decimal used as the GPS position. However, it is impossible to specify the data type for the parameters passed from web browser. Therefore, we need to create a SQLScript Calculation View to perform data-parsing and conversion. I created a dedicated package for the XS application called “XSPJ1”.  Under it, I put this view and OData service definition file.
 
 ![alt text](/images/F8.png?raw=true)
 
@@ -189,7 +188,7 @@ Now we can test the service to see whether we are able to get the data.
 So far, the development of the on-promise side has been completed. Let’s start to create the UI.
 
 # 2. PART II: On-Demand
-In the followings, I am going to use SAPUI5 to create an App to consume the data in the HANA database via OData service. 
+I am going to use SAPUI5 to create an App to consume the data in the HANA database via OData service. 
 
 ![alt text](/images/F12.png?raw=true)
 
@@ -223,11 +222,11 @@ In SAPUI5 development, it is recommended to apply the MVC (Model View Controller
 
 **Figure 15 – SAPUI5 MVC Architecture**
 
-So, I will follow the pattern and apply it in the development of this App. Please download the source files from Github and import them into the created Eclipse project. And, we will view the structure under “WebContent” folder.
+So, I will follow the pattern and apply it in the development of this App. Please download the source files from Github and import them into the created Eclipse project. And we will view the structure under “WebContent” folder.
 
 **Model:**
 
-It provides the methods to retrieve the data from the database and to set and update data. In this case, I directly put in the mock data for the product and GPS of customer’s position to simply the simulation. And, by default, the distance is of 10(km).
+It provides methods to retrieve the data from the database and to set and update data. In this case, I directly put in the mock data for the product and GPS of customer’s position to simply the simulation. And, by default, the distance is 10(km).
 
 ![alt text](/images/F16.png?raw=true)
 
@@ -263,7 +262,8 @@ In the “Result” controller, it collects the material, distance, GPS of custo
 **Figure 20 – Result.controller.js**
 
 # 3. Part III: Scenario Simulation
-We have known how it is designed. Now let’s see how it works. 
+We know how it is designed. Now let’s see how it works. 
+
 As mentioned, the App is using “sap.m” library that supports mobile device. In theory, the SAPUI5 App can run across different devices. To simplify the simulation, I choose Google Chrome browser in PC environment to run the App. 
 
 I deploy the App on Apache Tomcat installed in local PC and call it in Chrome browser. In the “Search” view, it shows the promoted product and the distance scope for input.
@@ -274,14 +274,14 @@ I deploy the App on Apache Tomcat installed in local PC and call it in Chrome br
 
 Customer changes the default value of 10km to 1km, click “GO” button. The result will be shown on the fly.
 
-In Google Map, the arrow icon points to the position where customer is. As the search result, it shows only two stores, 8001 and 8002, which are within 1km from customer. And, if the icon of the store is clicked, the Real-Time store stock data will pop up. Customer can decide which store to go to.
+In Google Map, the arrow icon points to the position where the customer is. As the search result, it shows only two stores, 8001 and 8002, which are within 1km from the customer. And, if the icon of the store is clicked, the Real-Time store stock data will pop up. Customer can decide which store to go to.
 
 ![alt text](/images/F22.1.png?raw=true)
 ![alt text](/images/F22.2.png?raw=true)
 
 **Figure 22 - Customer see the search results**
 
-If using the default distance of 10km to check the stores, we can find that store 8003 on the 5th Ave with 6PC in stock shown up as well. But, it may be a bit too far for this customer.
+If using the default distance of 10km to check the stores, we can find that store 8003 on 5th Ave with 6PC in stock shown up as well. But it may be a bit too far for this customer.
 
 ![alt text](/images/F23.png?raw=true)
 
@@ -289,7 +289,7 @@ If using the default distance of 10km to check the stores, we can find that stor
 
 
 > [!NOTE]
-> I deploy the App in local host and try to access the resource on the HANA XS server. Due to security reasons, most browsers disallow such cross domain requests. To resolve it, you can install the "Allow-Control-Allow-Origin" plugin for Chrome. 
+> I deploy the App in local host and try to access the resource on the HANA XS server. Due to security reasons, most browsers disallow such cross-domain requests. To resolve it, you can install the "Allow-Control-Allow-Origin" plugin for Chrome. 
 
 ![alt text](/images/F24.png?raw=true)
 
