@@ -82,8 +82,168 @@ What we want is the Real-Time stock data of each store. It is easy to get the nu
 ![alt text](/images/F6.png?raw=true)
 **Figure 6 – Real-Time Stock of Material “000000000211110095” with the store GPS Information**
 
-5. Create HANA procedure for spatial data calculation
+## 5. Create HANA procedure for spatial data calculation
 We need to know the stores which have the stock and located within the distance from certain position. In the first step of the procedure we access the calculation view created in step 4 to get the all the stores that have the material in stock. Second, we call the HANA spatial functions “ST_POINT”, “POINT” and “ST_DISTANCE” to filter out those within the distance.
 The below statement is to calculate the distance between the input position (v_lng and v_lat) and the GPS locations of all selected stores.
 
+```
 NEW ST_POINT('POINT('|| LNG || ' '|| LAT ||' )', 4326).ST_DISTANCE( NEW ST_POINT('POINT('|| :V_LNG || ' '|| :V_LAT ||')', 4326), ‘kilometer'))
+```
+![alt text](/images/F7.png?raw=true)
+**Figure 7 – HANA procedure to call spatial functions** 
+```
+BEGIN 
+
+/* Get all the stores that have the material in stock (Real-Time) */
+LOC = SELECT PLANT, NAME, QTY, TO_DECIMAL(LONGITUDE) AS LNG, TO_DECIMAL(LATITUDE) AS LAT
+	 			FROM "_SYS_BIC"."YSANDBOX/ZCV_STORE_STOCK" 
+	 			WHERE QTY > 0 AND LONGITUDE != '' AND LATITUDE != '' 
+AND MATERIAL = :V_MAT;
+
+/* Get the stores within certain distance from the input GPS location	*/		
+LT_STOCK = SELECT  PLANT, NAME, QTY, LNG, LAT
+	 			FROM :LOC
+	 			WHERE (NEW ST_POINT('POINT('|| LNG || ' '|| LAT ||' )', 4326).ST_DISTANCE( NEW ST_POINT('POINT('|| :V_LNG || ' '|| :V_LAT ||')', 4326), ‘kilometer')) < :V_DIST;
+
+```
+> [!NOTE] 
+> SRID 4326 is referring to WGS84, the standard provides a spheroidal reference surface for the Earth. It is the spatial reference system used by the Global Positioning System (GPS).
+
+## 6. Create a SQLScript Calculation View 
+HANA partial functions support specific data type, for instance decimal used as the GPS position. However, it is impossible to specify the data type for the parameters passed from web browser. Therefore, we need to create a SQLScript Calculation View to perform data-parsing and conversion.
+I create a dedicated package for the XS application called “XSPJ1”.  Under it, I put this view and OData service definition file.
+
+![alt text](/images/F8.png?raw=true)
+**Figure 8 – HANA SQLScript Calculation View**
+
+```
+BEGIN 
+  declare items varchar(100) ARRAY;
+  declare _text varchar(100);
+  declare _index integer;
+  
+  declare v_mat nvarchar(100);
+  declare v_lng decimal(10,6);
+  declare v_lat decimal(10,6);
+  declare v_dist int;
+  
+  _text := :v_param;
+  _index := 1;
+
+/* parse the parameter and covert data type */ 
+  WHILE LOCATE(:_text,',') > 0 DO
+	items[:_index] := SUBSTR_BEFORE(:_text,',');
+	_text 	:= SUBSTR_AFTER(:_text,',');
+	_index	:= :_index + 1;
+  END WHILE;
+  items[:_index] := :_text;
+  
+  v_mat := :items[1];
+  v_lng := to_decimal(:items[2]);
+  v_lat := to_decimal(:items[3]);
+  v_dist := to_int(:items[4]);
+
+/* call the stored procedure by passing the parameters */
+  CALL "_SYS_BIC"."YSANDBOX/ZDP_STORE_STOCK"(:v_mat,:v_lng,:v_lat,:v_dist,var_out);
+
+END 
+
+```
+## 7. Create XSODATA service
+Now, it’s time to create the XSODATA service. Let’s do it in HANA WEB-IDE Editor.  Open web browser, go to the URL(http://host:8000/sap/hana/ide/) defined in HANA system and input the logon data.
+
+![alt text](/images/F9.1.png?raw=true)
+Click “Editor” ICON
+
+![alt text](/images/F9.2.png?raw=true)
+**Figure 9 – HANA procedure to call spatial functions** 
+
+Create sub-package “services” under package “XSPJ1” and add the service that consumes the HANA SQLScript view created before.
+![alt text](/images/F10.png?raw=true)
+**Figure 10 – Create ODATA Service** 
+Now we can test the service to see whether we are able to get the data. 
+
+http://HANADEV:8000/XSPJ1/services/stock.xsodata/InputParams(v_param ='000000000211110095,40.757749,-73.985973,10')/Results?$select=*&$format=json
+![alt text](/images/F11.png?raw=true)
+**Figure 11 – OData retrieved from HANA model (same as Figure 6)**
+
+So far, the development of the on-promise side has been completed. Let’s start to create the UI.
+
+# 2. PART II: On-Demand
+In the followings, I am going to use SAPUI5 to create an App to consume the data in the HANA database via OData service. 
+
+![alt text](/images/F12.png?raw=true)
+**Figure 12 – Design Architecture**
+
+# 2.1 IDE preparation  
+Let’s download the latest Eclipse release - MARS and install the plugin of SAPUI5 toolkit from https://tools.hana.ondemand.com/mars
+
+![alt text](/images/F13.1.png?raw=true)
+![alt text](/images/F13.2.png?raw=true)
+**Figure 13 – Download the UI5 toolkit**
+
+# 2.2	Create a SAPUI5 project 
+Follow the wizard, use mobile library “sap.m” and choose XML(view type).
+
+![alt text](/images/F13.1.png?raw=true)
+![alt text](/images/F13.2.png?raw=true)
+![alt text](/images/F13.3.png?raw=true)
+![alt text](/images/F13.4.png?raw=true)
+**Figure 14 – Create a SAPUI5 project**
+
+In SAPUI5 development, it is recommended to apply the MVC (Model View Controller) architecture into the design in order to make the functions independent. 
+
+![alt text](/images/F15.png?raw=true)
+**Figure 15 – SAPUI5 MVC Architecture**
+So, I will follow the pattern and apply it in the development of this App. Please download the source files from Github and import them into the created Eclipse project. And, we will view the structure under “WebContent” folder.
+Model: Component.js 
+It provides the methods to retrieve the data from the database and to set and update data. In this case, I directly put in the mock data for the product and GPS of customer’s position to simply the simulation. And, by default, the distance is of 10(km).
+![alt text](/images/F16.png?raw=true)
+**Figure 16 – Component.js**
+
+**View:**
+
+It contains the logic responsible for defining and rendering the UI. In this case, it loads the predefined views “Search” and “Result”.
+![alt text](/images/F17.png?raw=true)
+**Figure 17 – App.view.js**
+
+**Controller:**
+It offers different methods to handle user input and interactions, process incoming requests and execute appropriate logic. In this case, it is separated into three controllers based on their functions.
+In the “Search” controller, it receives the “distance” value input by customer and navigates to the result controller.
+![alt text](/images/F18.png?raw=true)
+**Figure 18 – Search.controller.js**
+ “App” controller is responsible for passing the control from “Search” controller to “Result” controller. 
+![alt text](/images/F19.png?raw=true)
+**Figure 19 – App.controller.js**
+In the “Result” controller, it collects the material, distance, GPS of customer’s location data and makes them up into a parameter for the CRUD query. Then, it calls Ajax and passes the CRUD query to HANA OData service via HTTP request. At last, it displays a Google Map with the searched results on it.
+![alt text](/images/F20.png?raw=true)
+**Figure 20 – Result.controller.js**
+
+# 3. Part III: Scenario Simulation
+We have known how it is designed. Now let’s see how it works. 
+As mentioned, the App is using “sap.m” library that supports mobile device. In theory, the SAPUI5 App can run across different devices. To simplify the simulation, I choose Google Chrome browser in PC environment to run the App. 
+
+I deploy the App on Apache Tomcat installed in local PC and call it in Chrome browser. In the “Search” view, it shows the promoted product and the distance scope for input.
+
+![alt text](/images/F21.png?raw=true)
+**Figure 21 – Customer see the product**
+
+Customer changes the default value of 10km to 1km, click “GO” button. The result will be shown on the fly.
+In Google Map, the arrow icon points to the position where customer is. As the search result, it shows only two stores, 8001 and 8002, which are within 1km from customer. And, if the icon of the store is clicked, the Real-Time store stock data will pop up. Customer can decide which store to go to.
+![alt text](/images/F22.1.png?raw=true)
+![alt text](/images/F22.2.png?raw=true)
+**Figure 22 - Customer see the search results**
+If using the default distance of 10km to check the stores, we can find that store 8003 on the 5th Ave with 6PC in stock shown up as well. But, it may be a bit too far for this customer.
+
+![alt text](/images/F23.png?raw=true)
+**Figure 23 - Customer see a different search result with different distance input**
+
+
+> [!NOTE]  
+> I deploy the App in local host and try to access the resource on the HANA XS server. Due to security reasons, most browsers disallow such cross domain requests. To resolve it, you can install the "Allow-Control-Allow-Origin" plugin for Chrome. 
+
+![alt text](/images/F24.png?raw=true)
+**Figure 24 - Chrome Plugin**
+
+**Summary:**
+In this article, I have demonstrated how to build an SAPUI5 App to retrieve the Real-Time data from SAP HANA. It presents a way about how to leverage the features like modelling, spatial functions and XS in SAP HANA platform, as well as how to combine them with the traditional functionalities in SAP BW product.
