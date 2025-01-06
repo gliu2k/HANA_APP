@@ -1,6 +1,6 @@
 # Description
 
-This is an article that I wrote in **year 2016** regarding how to utilize the new features of SAP HANA. The 2nd article I submitted to SAPexperts in 2016. 
+This is an article that I wrote in **year 2016** about how to utilize the new features of SAP HANA. And this is the 2nd article that I submitted to SAPexperts.
 
 ![alt text](/images/F0.png?raw=true)
 
@@ -40,7 +40,8 @@ The native HANA applications usually access the HANA data exposed with OData(Ope
 <ins>**SAPUI5**</ins>
 
 SAPUI5 is a UI development toolkit, which combines a Javascript library and a bound of pre-defined controls, supporting HTML5 and CSS. It is mostly used to develop Fiori Apps, the future SAP Apps that can run on all devices. In this case, I am going to build an App that will derive SAPUI5 mobile library.
-Now let’s begin our real journey.
+
+**Now let’s begin our real journey.**
 
 #  Step-by-Step Approach:
 
@@ -54,11 +55,13 @@ Now let’s begin our real journey.
 
 First we need to build up a DataSource to receive the data posted from PI system through Web Service. In our scenario, the external system is the POS device installed in every store. Therefore, after each transaction, the sales data will get into the BW PSA table in Real-Time. 
 
-![alt text](/images/F2.png?raw=true)
+![alt text](/images/F2.1.png?raw=true)
+
+![alt text](/images/F2.2.png?raw=true)
 
 **Figure 2 – Datasource and the linked PSA table (“/BIC/B00040980000“)**
 
-(There are some extra developments on PI and ABAP sides, requesting to set up the interfaces and build up the mapping out fields. Such details will not be covered in this article. You can find a lot of information from SAP SDN network.)
+There are some extra developments on PI and ABAP sides, requesting to set up the interfaces and build up the mapping out fields. Such details will not be covered in this article. You can find a lot of information from SAP SDN network.
 
 ## 1.2. Create the data flow to get the stock snapshot data from ECC system
 
@@ -88,12 +91,14 @@ What we want is the Real-Time stock data of each store. It is easy to get the nu
 **Figure 6 – Real-Time Stock of Material “000000000211110095” with the store GPS Information**
 
 ## 1.5. Create HANA procedure for spatial data calculation
-We need to know the stores which have the stock and located within the distance from certain position. In the first step of the procedure we access the calculation view created in step 4 to get the all the stores that have the material in stock. Second, we call the HANA spatial functions “ST_POINT”, “POINT” and “ST_DISTANCE” to filter out those within the distance.
+We need to know the stores which have the stock and located within the distance from certain position. In the first step of the procedure we access the calculation view created in **step 4** to get the all the stores that have the material in stock. Second, we call the HANA spatial functions “ST_POINT”, “POINT” and “ST_DISTANCE” to filter out those within the distance.
+
 The below statement is to calculate the distance between the input position (v_lng and v_lat) and the GPS locations of all selected stores.
 
 ```
 NEW ST_POINT('POINT('|| LNG || ' '|| LAT ||' )', 4326).ST_DISTANCE( NEW ST_POINT('POINT('|| :V_LNG || ' '|| :V_LAT ||')', 4326), ‘kilometer'))
 ```
+
 ![alt text](/images/F7.png?raw=true)
 
 **Figure 7 – HANA procedure to call spatial functions** 
@@ -194,6 +199,7 @@ In the followings, I am going to use SAPUI5 to create an App to consume the data
 Let’s download the latest Eclipse release - MARS and install the plugin of SAPUI5 toolkit from https://tools.hana.ondemand.com/mars
 
 ![alt text](/images/F13.1.png?raw=true)
+
 ![alt text](/images/F13.2.png?raw=true)
 
 **Figure 13 – Download the UI5 toolkit**
@@ -201,10 +207,13 @@ Let’s download the latest Eclipse release - MARS and install the plugin of SAP
 # 2.2	Create a SAPUI5 project 
 Follow the wizard, use mobile library “sap.m” and choose XML(view type).
 
-![alt text](/images/F13.1.png?raw=true)
-![alt text](/images/F13.2.png?raw=true)
-![alt text](/images/F13.3.png?raw=true)
-![alt text](/images/F13.4.png?raw=true)
+![alt text](/images/F14.1.png?raw=true)
+
+![alt text](/images/F14.2.png?raw=true)
+
+![alt text](/images/F14.3.png?raw=true)
+
+![alt text](/images/F14.4.png?raw=true)
 
 **Figure 14 – Create a SAPUI5 project**
 
@@ -215,8 +224,11 @@ In SAPUI5 development, it is recommended to apply the MVC (Model View Controller
 **Figure 15 – SAPUI5 MVC Architecture**
 
 So, I will follow the pattern and apply it in the development of this App. Please download the source files from Github and import them into the created Eclipse project. And, we will view the structure under “WebContent” folder.
-Model: Component.js 
+
+**Model:**
+
 It provides the methods to retrieve the data from the database and to set and update data. In this case, I directly put in the mock data for the product and GPS of customer’s position to simply the simulation. And, by default, the distance is of 10(km).
+
 ![alt text](/images/F16.png?raw=true)
 
 **Figure 16 – Component.js**
@@ -229,7 +241,9 @@ It contains the logic responsible for defining and rendering the UI. In this cas
 **Figure 17 – App.view.js**
 
 **Controller:**
+
 It offers different methods to handle user input and interactions, process incoming requests and execute appropriate logic. In this case, it is separated into three controllers based on their functions.
+
 In the “Search” controller, it receives the “distance” value input by customer and navigates to the result controller.
 
 ![alt text](/images/F18.png?raw=true)
