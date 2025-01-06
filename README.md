@@ -195,7 +195,7 @@ In the followings, I am going to use SAPUI5 to create an App to consume the data
 
 **Figure 12 – Design Architecture**
 
-# 2.1. IDE preparation  
+## 2.1. IDE preparation  
 Let’s download the latest Eclipse release - MARS and install the plugin of SAPUI5 toolkit from https://tools.hana.ondemand.com/mars
 
 ![alt text](/images/F13.1.png?raw=true)
@@ -204,7 +204,7 @@ Let’s download the latest Eclipse release - MARS and install the plugin of SAP
 
 **Figure 13 – Download the UI5 toolkit**
 
-# 2.2. Create a SAPUI5 project 
+## 2.2. Create a SAPUI5 project 
 Follow the wizard, use mobile library “sap.m” and choose XML(view type).
 
 ![alt text](/images/F14.1.png?raw=true)
