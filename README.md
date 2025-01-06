@@ -174,7 +174,7 @@ Create sub-package “services” under package “XSPJ1” and add the service 
 
 Now we can test the service to see whether we are able to get the data. 
 
-http://HANADEV:8000/XSPJ1/services/stock.xsodata/InputParams(v_param ='000000000211110095,40.757749,-73.985973,10')/Results?$select=*&$format=json
+<ins>http://HANADEV:8000/XSPJ1/services/stock.xsodata/InputParams(v_param ='000000000211110095,40.757749,-73.985973,10')/Results?$select=*&$format=json</ins>
 
 ![alt text](/images/F11.png?raw=true)
 
@@ -230,14 +230,19 @@ It contains the logic responsible for defining and rendering the UI. In this cas
 **Controller:**
 It offers different methods to handle user input and interactions, process incoming requests and execute appropriate logic. In this case, it is separated into three controllers based on their functions.
 In the “Search” controller, it receives the “distance” value input by customer and navigates to the result controller.
+
 ![alt text](/images/F18.png?raw=true)
 
 **Figure 18 – Search.controller.js**
+
  “App” controller is responsible for passing the control from “Search” controller to “Result” controller. 
+ 
 ![alt text](/images/F19.png?raw=true)
 
 **Figure 19 – App.controller.js**
+
 In the “Result” controller, it collects the material, distance, GPS of customer’s location data and makes them up into a parameter for the CRUD query. Then, it calls Ajax and passes the CRUD query to HANA OData service via HTTP request. At last, it displays a Google Map with the searched results on it.
+
 ![alt text](/images/F20.png?raw=true)
 
 **Figure 20 – Result.controller.js**
@@ -253,7 +258,9 @@ I deploy the App on Apache Tomcat installed in local PC and call it in Chrome br
 **Figure 21 – Customer see the product**
 
 Customer changes the default value of 10km to 1km, click “GO” button. The result will be shown on the fly.
+
 In Google Map, the arrow icon points to the position where customer is. As the search result, it shows only two stores, 8001 and 8002, which are within 1km from customer. And, if the icon of the store is clicked, the Real-Time store stock data will pop up. Customer can decide which store to go to.
+
 ![alt text](/images/F22.1.png?raw=true)
 ![alt text](/images/F22.2.png?raw=true)
 
@@ -266,13 +273,12 @@ If using the default distance of 10km to check the stores, we can find that stor
 **Figure 23 - Customer see a different search result with different distance input**
 
 
-> [!NOTE]  
+> [!NOTE]
 > I deploy the App in local host and try to access the resource on the HANA XS server. Due to security reasons, most browsers disallow such cross domain requests. To resolve it, you can install the "Allow-Control-Allow-Origin" plugin for Chrome. 
 
 ![alt text](/images/F24.png?raw=true)
 
 **Figure 24 - Chrome Plugin**
 
-# 4. Summary:
-
+# 4. Summary
 In this article, I have demonstrated how to build an SAPUI5 App to retrieve the Real-Time data from SAP HANA. It presents a way about how to leverage the features like modelling, spatial functions and XS in SAP HANA platform, as well as how to combine them with the traditional functionalities in SAP BW product.
